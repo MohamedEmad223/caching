@@ -6,6 +6,7 @@ import 'package:film_app/feature/home/presentation/widgets/ships_list_view.dart'
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:sentry/sentry.dart';
 
 class MoviesScreen extends StatefulWidget {
   const MoviesScreen({super.key});
@@ -91,7 +92,7 @@ class _MoviesScreenState extends State<MoviesScreen> {
                         ),
                         minimumSize: Size(double.infinity, 48.h),
                       ),
-                      child: LoadMore(isDarkMode: isDarkMode)
+                      child: LoadMore(isDarkMode: isDarkMode),
                     ),
                 ],
               ),
@@ -103,4 +104,6 @@ class _MoviesScreenState extends State<MoviesScreen> {
       ),
     );
   }
+
+
 }
