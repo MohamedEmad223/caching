@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,7 +23,7 @@ void main() async {
   await setupDependencyInjection();
   runApp(
     BlocProvider(
-      create: (context) => ThemeCubit()..loadTheme(),
+      create: (context) => ThemeCubit(getIt<SharedPreferences>()),
       child: const MyApp(),
     ),
   );
@@ -36,14 +37,12 @@ class MyApp extends StatelessWidget {
     return ScreenUtilInit(
       designSize: const Size(375, 812),
       minTextAdapt: true,
-      child: BlocBuilder<ThemeCubit, ThemeState>(
+      child: BlocBuilder<ThemeCubit, ThemeMode>(
         builder: (context, state) {
-          final themeCubit = context.watch<ThemeCubit>();
-          final isDark = themeCubit.isDark;
           return MaterialApp(
-            darkTheme: ThemeManager.darkTheme,
-            theme: ThemeManager.lightTheme,
-            themeMode: (isDark ? ThemeMode.dark : ThemeMode.light),
+            darkTheme: ThemeManager.getDarkTheme(),
+            theme: ThemeManager.getLightTheme(),
+            themeMode: state,
             debugShowCheckedModeBanner: false,
             initialRoute: Routes.movieView,
             onGenerateRoute: AppRouter().generateRoute,

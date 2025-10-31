@@ -19,12 +19,20 @@ class ShipsRepo {
       final ships = await _apiServices.fetchAllShips({
         'options': {'page': page, 'limit': 10},
       });
-      _cacheService.cacheItem('ships_page_$page', ships);
 
-      log('repo success=> $ships');
+      // حفظ مباشر في Hive (object)
+      await _cacheService.cacheItem('ships_page_$page', ships);
+
+      log('repo success => saved page $page');
       return Right(ships);
     } catch (e) {
-      log('repo error=> $e');
+      // عند انقطاع الإنترنت
+      final cachedData = _cacheService.getCachedItem('ships_page_$page');
+      if (cachedData != null) {
+        log('repo cached success => loaded page $page from cache');
+        return Right(cachedData);
+      }
+      log('repo error => $e');
       return Left(ServerFailure(errorMessage: e.toString()));
     }
   }

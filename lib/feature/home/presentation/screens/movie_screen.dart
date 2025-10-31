@@ -1,6 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:film_app/core/helper/cubit/theme_cubit.dart';
-import 'package:film_app/core/utils/color_theme_extension.dart';
 import 'package:film_app/feature/home/data/cubit/cubit/ships_cubit.dart';
 import 'package:film_app/feature/home/presentation/screens/movie_dfetalis_screen.dart';
 import 'package:flutter/material.dart';
@@ -24,26 +23,26 @@ class _MoviesScreenState extends State<MoviesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final themeCubit = context.read<ThemeCubit>();
-    final isDark = themeCubit.isDark;
-    final colors = Theme.of(context).extension<ColorThemeExtension>()!;
+      final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final themeCubit = context.watch<ThemeCubit>();
+
     final shipsCubit = context.watch<ShipsCubit>();
 
     return Scaffold(
-      backgroundColor: colors.bgColor,
+      backgroundColor: isDarkMode ? Colors.grey[850] : Colors.purple[50],
       appBar: AppBar(
         title: Text(
           '🚀 Ships',
-          style: TextStyle(color: colors.toolbarTextColor),
+          style: TextStyle(color: isDarkMode ? Colors.white : Colors.black),
         ),
-        backgroundColor: colors.bgToolbarColor,
+        backgroundColor: isDarkMode ? Colors.grey[850] : Colors.purple[50],
         centerTitle: true,
         actions: [
           IconButton(
-            onPressed: () => themeCubit.changeThemeMode(),
+            onPressed: () => themeCubit.toggleTheme(),
             icon: Icon(
-              isDark ? Icons.light_mode : Icons.dark_mode_outlined,
-              color: colors.toolbarTextColor,
+              isDarkMode ? Icons.light_mode : Icons.dark_mode_outlined,
+              color: isDarkMode ? Colors.white : Colors.black,
             ),
           ),
         ],
@@ -85,7 +84,7 @@ class _MoviesScreenState extends State<MoviesScreen> {
                             padding: EdgeInsets.all(12.w),
                             decoration: BoxDecoration(
                               color:
-                                  isDark ? Colors.grey[850] : Colors.purple[50],
+                                  isDarkMode ? Colors.grey[850] : Colors.purple[50],
                               borderRadius: BorderRadius.circular(16.r),
                             ),
                             child: Row(
@@ -120,7 +119,7 @@ class _MoviesScreenState extends State<MoviesScreen> {
                                         style: TextStyle(
                                           fontSize: 16.sp,
                                           fontWeight: FontWeight.w600,
-                                          color: isDark
+                                          color: isDarkMode
                                               ? Colors.white
                                               : Colors.black,
                                         ),
@@ -138,7 +137,7 @@ class _MoviesScreenState extends State<MoviesScreen> {
                                             ship.shipType ?? '',
                                             style: TextStyle(
                                               fontSize: 14.sp,
-                                              color: isDark
+                                              color: isDarkMode
                                                   ? Colors.white70
                                                   : Colors.black,
                                             ),
@@ -163,7 +162,7 @@ class _MoviesScreenState extends State<MoviesScreen> {
                     Text(
                       'No more ships to load 🚫',
                       style: TextStyle(
-                        color: isDark ? Colors.white60 : Colors.black54,
+                        color: isDarkMode ? Colors.white60 : Colors.black54,
                       ),
                     )
                   else
@@ -173,7 +172,7 @@ class _MoviesScreenState extends State<MoviesScreen> {
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor:
-                            isDark ? Colors.grey[800] : Colors.grey[300],
+                            isDarkMode ? Colors.grey[800] : Colors.grey[300],
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16.r),
                         ),
@@ -182,7 +181,7 @@ class _MoviesScreenState extends State<MoviesScreen> {
                       child: Text(
                         'Load More Movies',
                         style: TextStyle(
-                          color: isDark
+                          color: isDarkMode
                               ? Colors.white70
                               : Colors.grey.shade700,
                         ),

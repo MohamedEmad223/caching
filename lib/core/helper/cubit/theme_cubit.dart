@@ -1,39 +1,23 @@
-import 'package:film_app/core/constants/app_constants.dart';
-import 'package:film_app/core/helper/shared_pref_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-part 'theme_state.dart';
+class ThemeCubit extends Cubit<ThemeMode> {
+  final SharedPreferences _prefs;
 
-class ThemeCubit extends Cubit<ThemeState> {
-  ThemeCubit() : super(ThemeInitial());
-
-  bool? _userSetMode; 
-
-  Future<void> loadTheme() async {
-    final savedTheme = SharedPrefHelper.getBool(AppConstants.isDarkMode);
-
-    if (savedTheme != null) {
-      _userSetMode = savedTheme;
-      emit(ThemeChangedState(isDark: savedTheme));
-    } else {
-      final systemDark =
-          WidgetsBinding.instance.platformDispatcher.platformBrightness ==
-              Brightness.dark;
-      emit(ThemeChangedState(isDark: systemDark));
-    }
+  ThemeCubit(this._prefs) : super(ThemeMode.system) {
+    _loadTheme();
   }
 
-  Future<void> changeThemeMode({bool? sharedMode}) async {
-    final newMode = sharedMode ?? !isDark;
-    _userSetMode = newMode;
-    await SharedPrefHelper.setBool(AppConstants.isDarkMode, newMode);
-    emit(ThemeChangedState(isDark: newMode));
+  void _loadTheme() {
+    final saved = _prefs.getString('theme');
+    if (saved == 'light') emit(ThemeMode.light);
+    if (saved == 'dark') emit(ThemeMode.dark);
   }
 
-  bool get isDark {
-    if (state is ThemeChangedState) return (state as ThemeChangedState).isDark;
-    return WidgetsBinding.instance.platformDispatcher.platformBrightness ==
-        Brightness.dark;
+  Future<void> toggleTheme() async {
+    final newMode = state == ThemeMode.dark ? ThemeMode.light : ThemeMode.dark;
+    emit(newMode);
+    await _prefs.setString('theme', newMode.name);
   }
 }
