@@ -10,11 +10,15 @@ class MovieDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       appBar: AppBar(
         title: const Text('🚀 Ships'),
-        backgroundColor: Colors.blue,
+        backgroundColor: isDarkMode ? Colors.blueGrey : Colors.blue,
         centerTitle: true,
+        iconTheme: IconThemeData(
+          color: isDarkMode ? Colors.white : Colors.white,
+        ),
       ),
       body: Padding(
         padding: EdgeInsets.all(16.w),

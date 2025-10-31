@@ -15,6 +15,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  WidgetsBinding.instance.platformDispatcher.onMetricsChanged;
   await Hive.initFlutter();
   await SharedPrefHelper.init();
   Hive.registerAdapter(ShipsModelAdapter());

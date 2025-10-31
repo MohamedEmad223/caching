@@ -1,7 +1,8 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:film_app/core/helper/cubit/theme_cubit.dart';
+import 'package:film_app/core/networking/api_constatnt.dart';
 import 'package:film_app/feature/home/data/cubit/cubit/ships_cubit.dart';
-import 'package:film_app/feature/home/presentation/screens/movie_dfetalis_screen.dart';
+import 'package:film_app/feature/home/presentation/widgets/load_more.dart';
+import 'package:film_app/feature/home/presentation/widgets/ships_list_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -18,12 +19,12 @@ class _MoviesScreenState extends State<MoviesScreen> {
   void initState() {
     super.initState();
     final shipsCubit = context.read<ShipsCubit>();
-    shipsCubit.fetchAllShips("ships/query");
+    shipsCubit.fetchAllShips(ApiConstants.queryShips);
   }
 
   @override
   Widget build(BuildContext context) {
-      final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final themeCubit = context.watch<ThemeCubit>();
 
     final shipsCubit = context.watch<ShipsCubit>();
@@ -65,96 +66,7 @@ class _MoviesScreenState extends State<MoviesScreen> {
               padding: EdgeInsets.all(12.w),
               child: Column(
                 children: [
-                  Expanded(
-                    child: ListView.separated(
-                      itemCount: shipsCubit.allShips.length,
-                      separatorBuilder: (_, __) => SizedBox(height: 12.h),
-                      itemBuilder: (context, index) {
-                        final ship = shipsCubit.allShips[index];
-                        return InkWell(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => MovieDetailsScreen(ship: ship),
-                              ),
-                            );
-                          },
-                          child: Container(
-                            padding: EdgeInsets.all(12.w),
-                            decoration: BoxDecoration(
-                              color:
-                                  isDarkMode ? Colors.grey[850] : Colors.purple[50],
-                              borderRadius: BorderRadius.circular(16.r),
-                            ),
-                            child: Row(
-                              children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(12.r),
-                                  child: CachedNetworkImage(
-                                    imageUrl: ship.image ?? '',
-                                    width: 80.w,
-                                    height: 100.h,
-                                    fit: BoxFit.cover,
-                                    placeholder: (_, __) => Container(
-                                      color: Colors.grey[300],
-                                      child:
-                                          const Icon(Icons.image_not_supported),
-                                    ),
-                                    errorWidget: (_, __, ___) => Container(
-                                      color: Colors.grey[300],
-                                      child:
-                                          const Icon(Icons.image_not_supported),
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(width: 12.w),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        ship.shipName ?? '',
-                                        style: TextStyle(
-                                          fontSize: 16.sp,
-                                          fontWeight: FontWeight.w600,
-                                          color: isDarkMode
-                                              ? Colors.white
-                                              : Colors.black,
-                                        ),
-                                      ),
-                                      SizedBox(height: 6.h),
-                                      Row(
-                                        children: [
-                                          const Icon(
-                                            Icons.star,
-                                            color: Colors.orange,
-                                            size: 18,
-                                          ),
-                                          SizedBox(width: 4.w),
-                                          Text(
-                                            ship.shipType ?? '',
-                                            style: TextStyle(
-                                              fontSize: 14.sp,
-                                              color: isDarkMode
-                                                  ? Colors.white70
-                                                  : Colors.black,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                const Icon(Icons.arrow_forward_ios, size: 18),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
+                  Expanded(child: ShipsListView()),
                   SizedBox(height: 12.h),
                   if (state is LoadingMoreShips)
                     const Center(child: CircularProgressIndicator())
@@ -168,24 +80,18 @@ class _MoviesScreenState extends State<MoviesScreen> {
                   else
                     ElevatedButton(
                       onPressed: () {
-                        shipsCubit.fetchAllShips("ships/query");
+                        shipsCubit.fetchAllShips(ApiConstants.queryShips);
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor:
-                            isDarkMode ? Colors.grey[800] : Colors.grey[300],
+                        backgroundColor: isDarkMode
+                            ? Colors.grey[800]
+                            : Colors.grey[300],
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16.r),
                         ),
                         minimumSize: Size(double.infinity, 48.h),
                       ),
-                      child: Text(
-                        'Load More Movies',
-                        style: TextStyle(
-                          color: isDarkMode
-                              ? Colors.white70
-                              : Colors.grey.shade700,
-                        ),
-                      ),
+                      child: LoadMore(isDarkMode: isDarkMode)
                     ),
                 ],
               ),
