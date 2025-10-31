@@ -1,5 +1,4 @@
-import 'package:dio/dio.dart';
-import 'package:film_app/core/networking/api_services.dart';
+import 'package:film_app/core/di/dependancy_injection.dart';
 import 'package:film_app/core/routes/routes.dart';
 import 'package:film_app/feature/home/data/cubit/cubit/ships_cubit.dart';
 import 'package:film_app/feature/home/data/repo/ship_repo.dart';
@@ -15,11 +14,7 @@ class AppRouter {
         return MaterialPageRoute(
           builder: (_) => BlocProvider(
             create: (context) => ShipsCubit(
-              ShipsRepo(
-                ApiServices(
-                  Dio()
-                )
-              )
+              getIt<ShipsRepo>(),
             ),
             child: MoviesScreen(),
           ),
